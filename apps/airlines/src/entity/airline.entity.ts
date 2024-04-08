@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Route } from "./route.entity";
+import { Flight } from "./flight.entity";
 
 @Entity("airline")
 export class Airline {
@@ -20,4 +21,7 @@ export class Airline {
 
     @OneToMany(type => Route, route => route.airline)
     routes: Route[];
+
+    @OneToMany(type => Flight, flight => flight.airline)
+    flights: Flight[];
 }

@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Airline } from '../entity/airline.entity';
 import { Repository } from 'typeorm';
-import { Route } from '../entity/route.entity';
 import { CreateAirlineDto } from '../dto/create-airline.dto';
 import { AirlineDto } from '../dto/get-airline.dto';
 import { RouteDto } from '../dto/get-route.dto';
@@ -27,9 +26,7 @@ export class AirlinesService {
       id: route.id,
       origin: route.origin,
       destination: route.destination,
-      price: route.price,
-      departure_time: route.departureTime,
-      arrival_time: route.arrivalTime,
+      type: route.type
     }));
 
     return {
@@ -62,10 +59,8 @@ export class AirlinesService {
     airlineDto.routes = airline.routes.map(route => ({
       'id': route.id,
       'origin': route.origin,
-      'price': route.price,
       'destination': route.destination,
-      'departure_time': route.departureTime,
-      'arrival_time': route.arrivalTime
+      'type': route.type
     }));
 
     return airlineDto;

@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
-import { FlightBookingController } from './flight-booking.controller';
-import { FlightBookingService } from './flight-booking.service';
+import { FlightBookingController } from './controller/flight-booking.controller';
+import { FlightBookingService } from './service/flight-booking.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FlightBooking, FlightBookingSchema } from '../schemas/flightBookings.schema';
+import { Booking, BookingSchema } from './schemas/booking.schama';
+
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/flight_bookings'),
-    MongooseModule.forFeature([{name: FlightBooking.name, schema: FlightBookingSchema}])
+    MongooseModule.forFeature([{name: Booking.name, schema: BookingSchema}])
   ],
   controllers: [FlightBookingController],
   providers: [FlightBookingService],

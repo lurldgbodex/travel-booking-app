@@ -1,4 +1,5 @@
-import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsEnum, IsString } from "class-validator";
+import { RouteType } from "../entity/route-type.enum";
 
 export class UpdateRouteData {
    
@@ -8,12 +9,6 @@ export class UpdateRouteData {
     @IsString()
     destination: string;
 
-    @IsNumber()
-    price: number;
-
-    @IsDateString()
-    departureTime: Date;
-
-    @IsDateString()
-    arrivalTime: Date;
+    @IsEnum(RouteType)
+    type: RouteType;
 }

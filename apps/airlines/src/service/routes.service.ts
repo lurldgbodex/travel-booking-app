@@ -5,6 +5,8 @@ import { EntityManager, Repository } from "typeorm";
 import { AddRouteDto } from "../dto/add-route.dto";
 import { Airline } from "../entity/airline.entity";
 import { UpdateRouteData } from "../dto/update-route.dto";
+import { RouteDto } from "../dto/get-route.dto";
+import { SuccessResponse } from "../dto/success-response.dto";
 import { RouteType } from "../entity/route-type.enum";
 
 @Injectable()
@@ -18,7 +20,7 @@ export class RouteService {
         private readonly entityManager: EntityManager,
     ) {}
 
-    async addRouteToAirline(airlineId: number, addRouteDto: AddRouteDto): Promise<Route> {
+    async addRouteToAirline(airlineId: number, addRouteDto: AddRouteDto): Promise<RouteDto> {
         const airline = await this.airlineRepository.findOneBy({id: airlineId});
         
         if (!airline) {
@@ -29,19 +31,60 @@ export class RouteService {
             const route = await this.routeRepository.create({
                 origin: addRouteDto.origin,
                 destination: addRouteDto.destination,
-                price: addRouteDto.price,
-                departureTime: addRouteDto.departure_time,
-                arrivalTime: addRouteDto.arrival_time,
                 airline: airline,
                 type: addRouteDto.type,
             });
-            return manager.save(route);
+
+            await manager.save(route);
+
+            const routeDto = new RouteDto();
+            routeDto.id = route.id;
+            routeDto.origin = route.origin;
+            routeDto.destination = route.destination;
+            routeDto.type = route.type;
+            routeDto.airline_id = route.airline.id;
+
+            return routeDto;
         });
     }
 
-    async getRoute() {}
+    async getRouteById(routeId: number): Promise<RouteDto> {
+        const route = await this.routeRepository.findOneBy({id: routeId});
 
-    async updateRoute(routeId: number, updateRouteData: UpdateRouteData): Promise<Route> {
+        if (!route) {
+            throw new NotFoundException(`Rotue with id ${routeId} not found`);
+        }
+
+        const routeDto = {
+            'id': route.id,
+            'origin': route.origin,
+            'destination': route.destination,
+            'type': route.type,
+            'airline_id': route.airline.id
+        };
+
+        return routeDto;
+    }
+
+    async getRouteByType(routeType: RouteType): Promise<RouteDto[]> {
+        const route = await this.routeRepository.find({
+            where: {type: routeType}
+        });
+
+       const routeDto: RouteDto[] = route.map(route => ({
+        id: route.id,
+        origin: route.origin,
+        destination: route.destination,
+        type: route.type,
+        airline_id: route.airline.id,
+       }));
+
+       return routeDto;
+    }
+
+
+
+    async updateRoute(routeId: number, updateRouteData: UpdateRouteData): Promise<RouteDto> {
         const existingRoute = await this.routeRepository.findOneBy({id: routeId});
         
         if (!existingRoute) {
@@ -49,10 +92,29 @@ export class RouteService {
         }
 
         return this.entityManager.transaction(async (manager: EntityManager) => {
-            manager.merge(Route, existingRoute, updateRouteData);
-            return manager.save(existingRoute);
+            await manager.merge(Route, existingRoute, updateRouteData);
+            await manager.save(existingRoute);
+
+            const route = {
+                'id': existingRoute.id,
+                'origin': existingRoute.origin,
+                'destination': existingRoute.destination,
+                'type': existingRoute.type,
+                'airline_id': existingRoute.airline.id,
+            }
+            return route;
         });
     }
 
-    async deleteRoute() {}
+    async deleteRoute(routeId: number) {
+        const route = await this.routeRepository.findOneBy({id: routeId});
+
+        if (!route) {
+            throw new NotFoundException("Route not found with id");
+        }
+
+        await this.routeRepository.delete(route);
+
+        return new SuccessResponse("Route deleted Successfully");
+    }
 }

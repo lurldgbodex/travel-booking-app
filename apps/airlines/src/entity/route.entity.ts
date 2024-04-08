@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Airline } from "./airline.entity";
 import { RouteType } from "./route-type.enum";
+import { Flight } from "./flight.entity";
 
 @Entity('routes')
 export class Route {
@@ -16,16 +17,7 @@ export class Route {
     @Column()
     destination: string;
 
-    @Column()
-    price: number;
-
-    @Column()
-    departureTime: Date;
-
-    @Column()
-    arrivalTime: Date;
-
-    @ManyToOne(() => Airline, Airline => Airline.routes, {
+    @ManyToOne(() => Airline, airline => airline.routes, {
         cascade: true
     })
     @JoinColumn()

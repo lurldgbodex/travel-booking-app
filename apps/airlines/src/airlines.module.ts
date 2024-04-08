@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from './modules/database.module';
 import { AirlineConfigModule } from './modules/config.module';
 import { RouteService } from './service/routes.service';
+import { Flight } from './entity/flight.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { RouteService } from './service/routes.service';
       entities: [Airline, Route],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Airline, Route]),
+    TypeOrmModule.forFeature([Airline, Route, Flight]),
   ],
   controllers: [AirlinesController],
   providers: [AirlinesService, RouteService],

@@ -1,8 +1,9 @@
+import { RouteType } from "../entity/route-type.enum";
+
 export class RouteDto {
     id: number;
+    airline_id?: number;
+    type: RouteType;
     origin: string;
     destination: string;
-    price: number;
-    departure_time: Date;
-    arrival_time: Date;
 }

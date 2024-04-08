@@ -1,23 +1,24 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Flight } from '../interfaces/Flight.interface';
+import { Flight } from '../interfaces/flight.interface';
 import mongoose, { Model } from 'mongoose';
-import { FlightBooking } from '../schemas/flightBookings.schema';
 import { BookFlightRequest } from '../dto/BookFlightRequest';
 import { randomUUID } from 'crypto';
+import { Booking } from '../schemas/booking.schama';
 
 @Injectable()
 export class FlightBookingService {
-  constructor(@InjectModel(FlightBooking.name) private flightModel: Model<FlightBooking>) {}
+  constructor(
+    @InjectModel(Booking.name) private flightModel: Model<Booking>
+    ) {}
   
-  async findAll(): Promise<Flight[]> {
-     const flightBookings: FlightBooking [] = await this.flightModel.find();
+  async findAllBookedFlight(): Promise<Flight[]> {
+     const flightBookings: Booking [] = await this.flightModel.find();
      const flights: Flight[] = flightBookings.map(booking => ({
-      flightNumber: booking.flightNumber,
-      origin: booking.origin,
-      destination: booking.destination,
-      departureTime: booking.departureTime,
-      arrivalTime: booking.arrivalTime
+      flight_id: booking.flightId,
+      user_id: booking.userId,
+      status: booking.status,
+      created_at: booking.createdAt,
      }));
 
      return flights;
@@ -27,20 +28,19 @@ export class FlightBookingService {
     const isIdValid = mongoose.Types.ObjectId.isValid(id);
     
     if (!isIdValid) {
-      throw new HttpException('flight not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException(`Booked flight not found with id ${id}`);
     }
-    const flightBooking: FlightBooking | null = await this.flightModel.findById(id);
+    const flightBooking: Booking | null = await this.flightModel.findById(id);
 
     if (!flightBooking) {
-      throw new HttpException('flight not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('flight not found');
     }
 
     const flight: Flight = {
-      flightNumber: flightBooking.flightNumber,
-      origin: flightBooking.origin,
-      destination: flightBooking.destination,
-      departureTime: flightBooking.departureTime,
-      arrivalTime: flightBooking.arrivalTime
+      flight_id: flightBooking.flightId,
+      user_id: flightBooking.userId,
+      status: flightBooking.status,
+      created_at: flightBooking.createdAt
     };
 
     return flight;
@@ -49,6 +49,7 @@ export class FlightBookingService {
   async bookFlight(bookFlightRequest: BookFlightRequest) {
 
     //todo: make a call to airlines to check airlines available for destination;
+    const flightDetails = await this.httpService
 
     const newBookFlightRequest = new this.flightModel({
       flightNumber: randomUUID,

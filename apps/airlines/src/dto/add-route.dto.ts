@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 import { RouteType } from "../entity/route-type.enum";
 
 export class AddRouteDto {
@@ -13,14 +13,4 @@ export class AddRouteDto {
     @IsString()
     @IsEnum(RouteType)
     type: RouteType
-
-    @IsNumber()
-    @IsNotEmpty()
-    price: number;
-
-    @IsDateString()
-    departure_time: Date;
-
-    @IsDateString()
-    arrival_time: Date;
 }
