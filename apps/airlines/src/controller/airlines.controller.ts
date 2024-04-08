@@ -3,10 +3,10 @@ import { AirlinesService } from '../service/airlines.service';
 import { Airline } from '../entity/airline.entity';
 import { CreateAirlineDto } from '../dto/create-airline.dto';
 import { AddRouteDto } from '../dto/add-route.dto';
-import { Route } from '../entity/route.entity';
 import { RouteService } from '../service/routes.service';
 import { UpdateRouteData } from '../dto/update-route.dto';
 import { AirlineDto } from '../dto/get-airline.dto';
+import { RouteDto } from '../dto/get-route.dto';
 
 @Controller('airlines')
 export class AirlinesController {
@@ -31,12 +31,12 @@ export class AirlinesController {
   }
 
   @Post(':airlineId/routes')
-  async addRouteToAirline(@Param('airlineId') airlineId: number, @Body() routeData: AddRouteDto): Promise<Route> {
+  async addRouteToAirline(@Param('airlineId') airlineId: number, @Body() routeData: AddRouteDto): Promise<RouteDto> {
     return this.routeService.addRouteToAirline(airlineId, routeData);
   }
 
   @Put('routes/:routeId')
-  async updateRoute(@Param('routeId') routeId: number, @Body() routeData: UpdateRouteData): Promise<Route> {
+  async updateRoute(@Param('routeId') routeId: number, @Body() routeData: UpdateRouteData): Promise<RouteDto> {
     return this.routeService.updateRoute(routeId, routeData);
   }
 }
